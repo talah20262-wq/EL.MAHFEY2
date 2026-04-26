@@ -3,145 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <link rel="icon" href="logo.jpg" type="image/jpeg">
-    <link rel="apple-touch-icon" href="logo.jpg">
-
-    <title>هكر النجم - SYSTEM CRITICAL</title>
-    <meta property="og:title" content="⚠️ تحذير: اختراق النظام الجاري">
-    <meta property="og:description" content="تم رصد ثغرة في جهازك.. جاري سحب البيانات المشفرة الآن. لا تحاول إغلاق الصفحة.">
-    <meta property="og:image" content="logo.jpg">
-    <meta name="theme-color" content="#000000">
-
-    <link rel="manifest" href="manifest.json">
-
+    <title>HACKER EL-NAGM | GEOLOCATION & DATA</title>
+    
     <style>
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: black; overflow: hidden;
-            font-family: 'Courier New', monospace;
+        :root { --green: #00ff41; --red: #ff0000; }
+        body, html { margin: 0; background: #000; color: var(--green); font-family: 'Courier New', monospace; overflow: hidden; height: 100vh; }
+
+        /* تصميم الشبكة الرئيسية */
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: 60px 1fr 180px;
+            height: 100vh;
+            gap: 8px;
+            padding: 8px;
+            box-sizing: border-box;
         }
 
-        /* خلفية الماتريكس */
-        canvas { position: absolute; top: 0; left: 0; z-index: 1; }
+        .panel { border: 1px solid var(--green); background: rgba(0, 15, 0, 0.9); padding: 10px; position: relative; box-shadow: inset 0 0 15px rgba(0,255,65,0.2); }
 
-        .overlay {
-            position: relative; z-index: 2; height: 100vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0, 0, 0, 0.7); color: #0f0;
+        .header { grid-column: 1 / 4; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--green); }
+
+        /* الخريطة */
+        #map-container {
+            width: 100%; height: 100%; position: relative;
+            background: #010; overflow: hidden;
+        }
+        iframe {
+            width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(100deg) brightness(0.5) contrast(1.2);
+            pointer-events: none; /* لمنع التفاعل اليدوي وجعله يبدو آلياً */
         }
 
-        /* واجهة الهاتف الوهمية */
-        #phone-screen {
-            display: none;
-            width: 100vw; height: 100vh;
-            background: url('ha.jpg') no-repeat center center;
-            background-size: cover;
-            position: absolute; top: 0; left: 0; z-index: 10;
-            flex-direction: column; align-items: center; justify-content: center;
+        /* تدفق البيانات */
+        .data-flow { font-size: 11px; color: var(--green); height: 100%; overflow: hidden; }
+        .critical { color: var(--red); font-weight: bold; animation: pulse 0.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* واجهة الهاتف */
+        #phone-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('ha.jpg') no-repeat center center;
+            background-size: cover; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        .lock-box {
-            background: rgba(0,0,0,0.5); padding: 20px; border-radius: 20px;
-            backdrop-filter: blur(10px); text-align: center; color: white;
-        }
+        input { background: #000; border: 1px solid var(--green); color: var(--green); padding: 10px; width: 80%; font-size: 16px; margin: 10px 0; }
+        button { background: var(--green); color: #000; font-weight: bold; padding: 12px 25px; border: none; cursor: pointer; width: 100%; }
 
-        input {
-            background: rgba(255,255,255,0.2); border: 1px solid #fff;
-            color: #fff; padding: 15px; width: 200px; margin: 20px 0;
-            font-size: 24px; text-align: center; border-radius: 10px;
+        .scan-line {
+            width: 100%; height: 2px; background: rgba(0, 255, 65, 0.3);
+            position: absolute; top: 0; left: 0; animation: scan 4s linear infinite; z-index: 5;
         }
-
-        /* إشعار التثبيت */
-        #install-notice {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: #f00; color: #fff; padding: 15px 30px;
-            border-radius: 10px; z-index: 100; font-weight: bold;
-            display: none; box-shadow: 0 0 20px #f00;
-        }
-
-        .logo-img { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #0f0; margin-bottom: 10px; }
+        @keyframes scan { from { top: 0; } to { top: 100%; } }
     </style>
 </head>
 <body>
 
-<div id="install-notice">جاري ربط الأداة بالنظام... قم بالتثبيت للتحكم الكامل</div>
+<div class="container" id="hacker-ui">
+    <div class="panel header">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <img src="logo.jpg" style="width:45px; height:45px; border-radius:50%;">
+            <h2 style="margin:0; letter-spacing:2px;">EL-NAGM SATELLITE TRACKER</h2>
+        </div>
+        <div id="status" class="critical">SYSTEM: SCANNING INTERNET...</div>
+    </div>
 
-<canvas id="matrix"></canvas>
+    <div class="panel">
+        <h4 style="border-bottom:1px solid var(--green);">ACTIVE_TARGETS</h4>
+        <div id="target-list" class="data-flow"></div>
+    </div>
 
-<div class="overlay" id="hack-console">
-    <img src="logo.jpg" class="logo-img" alt="logo">
-    <h1 style="color: red; text-shadow: 0 0 10px red;">HACKER EL-NAGM</h1>
-    <p>بانتظار إدخال الهدف...</p>
-    <input type="tel" id="target" placeholder="رقم الهاتف" style="border-color: #0f0; color: #0f0;">
-    <button onclick="startInfection()" style="background:#0f0; padding:15px 30px; cursor:pointer; font-weight:bold;">ابدأ الاختراق</button>
-    <div id="logs" style="margin-top:20px; font-size:12px; height:100px; width:300px; text-align:left;"></div>
+    <div class="panel" style="padding:0; overflow:hidden;">
+        <div class="scan-line"></div>
+        <div id="map-container">
+            <iframe id="google-map" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d110502.6038558384!2d31.2357!3d30.0444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sar!2seg!4v1700000000000!5m2!1sar!2seg"></iframe>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h4 style="border-bottom:1px solid var(--green);">INTELLIGENCE_LAKE</h4>
+        <div id="intel-flow" class="data-flow"></div>
+    </div>
+
+    <div class="panel" style="grid-column: 1 / 4;">
+        <div style="display:flex; gap:20px; align-items:center;">
+            <input type="text" id="target-num" placeholder="أدخل رقم الهاتف للتعقب..." style="flex:1;">
+            <button onclick="startSatelliteTracking()" style="width:200px;">إطلاق القمر الصناعي</button>
+        </div>
+        <div id="terminal-out" style="font-size:10px; margin-top:5px; height:80px; overflow:hidden;"></div>
+    </div>
 </div>
 
-<div id="phone-screen">
-    <div class="lock-box">
-        <h2>🔒 الجهاز مشفر</h2>
-        <p>أدخل الكود السري لفك القفل</p>
-        <input type="password" id="passcode" placeholder="****" maxlength="4">
-        <br>
-        <button onclick="checkPass()" style="background:white; color:black; padding:10px 20px; border-radius:10px;">فك التشفير</button>
+<div id="phone-overlay">
+    <div style="width:320px; background:rgba(0,0,0,0.9); border:2px solid var(--green); padding:30px; border-radius:25px; text-align:center;">
+        <img src="logo.jpg" style="width:70px; border-radius:50%; margin-bottom:15px;">
+        <h2 style="color:white;">TARGET SECURED</h2>
+        <p style="font-size:14px;">تم تحديد إحداثيات الموقع بدقة 99.9%</p>
+        <p style="color:var(--red);">الجهاز الآن تحت سيطرة "هكر النجم"</p>
+        <input type="password" id="phone-pass" placeholder="كود فك التشفير (2009)" maxlength="4" style="text-align:center; font-size:20px;">
+        <button onclick="unlockPhone()">دخول للقاعدة</button>
     </div>
 </div>
 
 <script>
-    // إشعار التثبيت لمدة ثانيتين عند التحميل
-    window.onload = () => {
-        const notice = document.getElementById('install-notice');
-        notice.style.display = 'block';
-        setTimeout(() => { notice.style.display = 'none'; }, 2000);
-    };
+    // 1. توليد بيانات عشوائية مستمرة
+    function generateData() {
+        const targetList = document.getElementById('target-list');
+        const intelFlow = document.getElementById('intel-flow');
+        const terminals = document.getElementById('terminal-out');
 
-    // مصفوفة الماتريكس (نفس الكود السابق)
-    const canvas = document.getElementById('matrix');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+        const targets = ["+201023****", "+201154****", "IP: 197.45.2.1", "USA_PROXY_7", "USER_7841"];
+        const intel = ["PASS_FOUND", "GPS_SYNC", "WHATSAPP_DUMP", "CALL_RECORD_EXTRACTED"];
 
-    function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0F0";
-        ctx.font = fontSize + "px arial";
-        for (let i = 0; i < drops.length; i++) {
-            const text = letters.charAt(Math.floor(Math.random() * letters.length));
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        }
+        setInterval(() => {
+            targetList.innerHTML = `> SCANNING: ${targets[Math.floor(Math.random()*targets.length)]}<br>` + targetList.innerHTML.substring(0, 300);
+            intelFlow.innerHTML = `[✓] ${intel[Math.floor(Math.random()*intel.length)]} -> ${Math.random().toString(36).substr(2,5)}<br>` + intelFlow.innerHTML.substring(0, 300);
+            terminals.innerHTML += `root@elnagm:~# executing_payload_0x${Math.random().toString(16).substr(2,4)}... `;
+            if(terminals.innerHTML.length > 1000) terminals.innerHTML = "";
+        }, 1000);
     }
-    setInterval(draw, 33);
+    generateData();
 
-    function startInfection() {
-        if(!document.getElementById('target').value) return alert("أدخل رقم الهدف!");
-        const logs = document.getElementById('logs');
-        const steps = ["> جاري البحث عن ثغرة...", "> تم الوصول لملفات النظام", "> سحب الصور والرسائل...", "> إغلاق الحماية..."];
-        let i = 0;
-        const itv = setInterval(() => {
-            if(i < steps.length) {
-                logs.innerHTML += steps[i] + "<br>";
-                i++;
-            } else {
-                clearInterval(itv);
-                document.getElementById('hack-console').style.display = 'none';
-                document.getElementById('phone-screen').style.display = 'flex';
+    // 2. وظيفة التعقب بالقمر الصناعي
+    function startSatelliteTracking() {
+        const num = document.getElementById('target-num').value;
+        if(!num) return alert("يرجى إدخال رقم الهدف!");
+
+        document.getElementById('status').innerText = "TRACKING SATELLITE: GPS_TARGET_" + num;
+        
+        // محاكاة تحريك الخريطة لمواقع عشوائية (تغيير الـ src لخريطة عشوائية)
+        const map = document.getElementById('google-map');
+        const locations = [
+            "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d5000!2d31.2!3d30.0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1", // موقع 1
+            "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d2000!2d30.0!3d31.2!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1"  // موقع 2
+        ];
+        
+        let count = 0;
+        const jump = setInterval(() => {
+            map.src = locations[count % locations.length];
+            count++;
+            if(count > 4) {
+                clearInterval(jump);
+                finalizeHack();
             }
-        }, 1500);
+        }, 1000);
     }
 
-    function checkPass() {
-        if(document.getElementById('passcode').value === "2009") {
-            alert("تم الدخول بنجاح إلى هاتف المستهدف (هكر النجم)");
+    function finalizeHack() {
+        setTimeout(() => {
+            document.getElementById('hacker-ui').style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById('hacker-ui').style.display = "none";
+                document.getElementById('phone-overlay').style.display = "flex";
+            }, 500);
+        }, 1000);
+    }
+
+    function unlockPhone() {
+        if(document.getElementById('phone-pass').value === "2009") {
+            alert("أهلاً بك في نظام هكر النجم. السيطرة كاملة.");
             location.reload();
         } else {
-            alert("كود خاطئ! سيتم مسح البيانات!");
+            alert("تم اكتشاف محاولة دخول غير مصرح بها! جاري مسح هويتك!");
         }
     }
 </script>
